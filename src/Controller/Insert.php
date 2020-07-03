@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 class Insert extends AbstractFOSRestController
 {
     /**
-     * Insert message to the queue.
+     * INSERT message to the queue.
      *
      * @param Message        $message
      * @param Request        $request
@@ -27,7 +27,7 @@ class Insert extends AbstractFOSRestController
      * @return FormInterface|Response
      *
      * @ParamConverter("message", converter="fos_rest.request_body")
-     * @Rest\Post("/queue)
+     * @Rest\Post("/queue")
      * @SWG\Parameter(name="message",
      *     in="body",
      *     required=true,
@@ -47,7 +47,7 @@ class Insert extends AbstractFOSRestController
      *     response=400,
      *     description="When a validation error has occured."
      * )
-     * @SWG\Tag(name="Battle")
+     * @SWG\Tag(name="Queue")
      */
     public function __invoke(Message $message, Request $request, MessageManager $manager): Response
     {

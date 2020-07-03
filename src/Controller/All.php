@@ -10,17 +10,16 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @Rest\Route("/queue)
- */
 class All extends AbstractFOSRestController
 {
     /**
-     * Get the queue of a user.
+     * Get the queue
+     *
+     * @param MessageManager $manager
      *
      * @return Response
      *
-     * @Rest\Get("/", name="get_messages")
+     * @Rest\Get("/queue", name="get_messages")
      * @SWG\Response(
      *     response=200,
      *     description="Returns the queue",

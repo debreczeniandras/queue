@@ -19,7 +19,6 @@
         "symfony/framework-bundle": "5.1.*",
         "symfony/serializer-pack": "^1.0",
         "symfony/twig-pack": "^1.0",
-        "symfony/workflow": "5.1.*",
         "symfony/yaml": "5.1.*"
     },
     "require-dev": {

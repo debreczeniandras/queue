@@ -14,10 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 class Get extends AbstractFOSRestController
 {
     /**
-     * Get one message.
+     * Get one message explicitly
      *
      * @param Message $message
-     * @param string  $id
      *
      * @return Response
      *

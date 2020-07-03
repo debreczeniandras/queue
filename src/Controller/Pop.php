@@ -11,16 +11,16 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class BattleController extends AbstractFOSRestController
+class Pop extends AbstractFOSRestController
 {
     /**
-     * Pop a message from the queue
+     * POP a message from the queue.
      *
      * @param MessageManager $manager
      *
      * @return FormInterface|Response
      *
-     * @Rest\Get("/queue/pop)
+     * @Rest\Get("/queue/pop")
      * @SWG\Response(
      *     response=200,
      *     description="Get the the message.",
