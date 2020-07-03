@@ -10,9 +10,4 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class MessageQueue extends \SplPriorityQueue
 {
-    /**
-     * @var Message[]
-     */
-    private iterable $messages;
-    
 }

@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Message;
+use App\Entity\MessageQueue;
 use App\Storage\RedisMessageStorage;
 
 class MessageManager
@@ -32,5 +33,10 @@ class MessageManager
     public function find(string $id): Message
     {
         return $this->storage->find($id);
+    }
+    
+    public function findAll(): MessageQueue
+    {
+        return $this->storage->getQueue();
     }
 }

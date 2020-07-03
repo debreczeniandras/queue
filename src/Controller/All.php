@@ -8,33 +8,36 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class BattleController extends AbstractFOSRestController
+/**
+ * @Rest\Route("/queue)
+ */
+class All extends AbstractFOSRestController
 {
     /**
-     * Pop a message from the queue
+     * Get the queue of a user.
      *
-     * @param MessageManager $manager
+     * @return Response
      *
-     * @return FormInterface|Response
-     *
-     * @Rest\Get("/queue/pop)
+     * @Rest\Get("/", name="get_messages")
      * @SWG\Response(
      *     response=200,
-     *     description="Get the the message.",
-     *     @Model(type=Message::class)
+     *     description="Returns the queue",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Message::class))
+     *     )
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="When the queue is empty."
+     *     description="When no messages in the queue."
      * )
-     * @SWG\Tag(name="Queue")
+     * @SWG\Tag(name="Message")
      */
     public function __invoke(MessageManager $manager): Response
     {
-        $view = $this->view($manager->pop(), 200)
+        $view = $this->view($manager->findAll(), 200)
                      ->setFormat('json');
         
         return $this->handleView($view);

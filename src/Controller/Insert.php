@@ -20,13 +20,14 @@ class Insert extends AbstractFOSRestController
     /**
      * Insert message to the queue.
      *
+     * @param Message        $message
      * @param Request        $request
      * @param MessageManager $manager
      *
      * @return FormInterface|Response
      *
      * @ParamConverter("message", converter="fos_rest.request_body")
-     * @Rest\Post()
+     * @Rest\Post("/queue)
      * @SWG\Parameter(name="message",
      *     in="body",
      *     required=true,
@@ -57,11 +58,11 @@ class Insert extends AbstractFOSRestController
             return $this->handleView($this->view($form)->setFormat('json'));
         }
         
-        $battle = $manager->create($options);
+        $manager->insert($message);
         
-        $view = $this->view($battle, 201)
+        $view = $this->view($message, 201)
                      ->setContext((new Context())->setGroups(['Init']))
-                     ->setHeader('Location', $this->generateUrl('get_battle', ['id' => $battle->getId()]))
+                     ->setHeader('Location', $this->generateUrl('get_message', ['id' => $message->getId()]))
                      ->setFormat('json');
         
         return $this->handleView($view);
