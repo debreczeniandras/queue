@@ -11,13 +11,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class Message
 {
     /**
-     * @var int
+     * @var string
      *
      * @Assert\NotBlank()
      * @Assert\Valid()
-     * @Assert\Type("integer")
      */
-    private int $id;
+    private string $id;
     
     /**
      * @var int
@@ -56,19 +55,19 @@ class Message
     }
     
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
     
     /**
-     * @param int $id
+     * @param string $id
      *
      * @return Message
      */
-    public function setId(int $id): Message
+    public function setId(string $id): Message
     {
         $this->id = $id;
         

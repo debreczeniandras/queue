@@ -6,6 +6,8 @@ use App\Entity\Message;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MessageType extends AbstractType
@@ -14,11 +16,19 @@ class MessageType extends AbstractType
     {
         $builder->add('priority', IntegerType::class);
         $builder->add('value');
+        $builder->addEventListener(FormEvents::PRE_SET_DATA,[$this, 'preSet']);
     }
     
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => Message::class, 'csrf_protection' => false,]);
-        $resolver->setDefaults(['empty_data' => Message::getInstance(),]);
+        $resolver->setDefaults(['data_class' => Message::class,
+                                'csrf_protection' => false,
+                               ]);
+    }
+    
+    public function preSet(FormEvent $event)
+    {
+        $data = $event->getData();
+        $data->setId(hash("crc32b", hash('sha256', uniqid(mt_rand(), true), true)));
     }
 }

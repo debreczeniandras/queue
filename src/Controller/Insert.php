@@ -33,7 +33,7 @@ class Insert extends AbstractFOSRestController
      *     required=true,
      *     @SWG\Schema(
      *          type="object",
-     *          ref=@Model(type=Message::class)
+     *          ref=@Model(type=MessageType::class, )
      *     )
      * )
      * @SWG\Response(
@@ -52,7 +52,7 @@ class Insert extends AbstractFOSRestController
     public function __invoke(Message $message, Request $request, MessageManager $manager): Response
     {
         $form = $this->createForm(MessageType::class, $message);
-        $form->submit($request->request->all(), false);
+        $form->submit(null, false);
         
         if (!$form->isValid()) {
             return $this->handleView($this->view($form)->setFormat('json'));
@@ -61,7 +61,6 @@ class Insert extends AbstractFOSRestController
         $manager->insert($message);
         
         $view = $this->view($message, 201)
-                     ->setContext((new Context())->setGroups(['Init']))
                      ->setHeader('Location', $this->generateUrl('get_message', ['id' => $message->getId()]))
                      ->setFormat('json');
         
