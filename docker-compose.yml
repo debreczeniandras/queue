@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  dockerhost:
+    image: qoomon/docker-host
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+  app:
+    build:
+      context: etc/docker/app
+    volumes:
+    - .:/var/www/project
+    - ${COMPOSER_PATH}:/var/www/.composer/
+    - ${SSH_KEY_PATH}/id_rsa:/var/www/.ssh/id_rsa
+    - ${SSH_KEY_PATH}/id_rsa.pub:/var/www/.ssh/id_rsa.pub
+    - ${SSH_KEY_PATH}/known_hosts:/var/www/.ssh/known_hosts
+    env_file:
+    - .env
+    environment:
+      PHP_IDE_CONFIG: "serverName=queue"
+    user: "${UID}:${GID}"
+    networks:
+      - default
+    depends_on:
+    - dockerhost
+    - redis
+  web:
+    image: nginx:alpine
+    ports:
+      - ${PORT_WEB}:80
+    volumes:
+      - .:/var/www/project
+      - ./etc/docker/nginx/queue.conf:/etc/nginx/conf.d/00-queue.conf
+    depends_on:
+      - app
+      - dockerhost
+    env_file:
+      - .env
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      REDIS_HOSTS: "queue:redis:6379:0"
+    ports:
+      - ${PORT_REDIS_GUI}:8081
+    depends_on:
+      - redis
+
+volumes:
+  redis-data:

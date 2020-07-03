@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Manager;
+
+use App\Entity\Message;
+use App\Storage\RedisMessageStorage;
+
+class MessageManager
+{
+    private RedisMessageStorage $storage;
+    
+    public function __construct(RedisMessageStorage $storage)
+    {
+        $this->storage = $storage;
+    }
+    
+    public function insert(Message $message): bool
+    {
+        return $this->storage->insert($message);
+    }
+    
+    public function pop(): Message
+    {
+        return $this->storage->pop();
+    }
+    
+    public function remove(Message $message): bool
+    {
+        return $this->storage->remove($message);
+    }
+    
+    public function find(string $id): Message
+    {
+        return $this->storage->find($id);
+    }
+}
