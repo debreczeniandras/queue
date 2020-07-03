@@ -20,10 +20,10 @@ class Pop extends AbstractFOSRestController
      *
      * @return FormInterface|Response
      *
-     * @Rest\Get("/queue/pop")
+     * @Rest\Post("/queue/messages")
      * @SWG\Response(
      *     response=200,
-     *     description="Get the the message.",
+     *     description="Last message from the queue is popped.",
      *     @Model(type=Message::class)
      * )
      * @SWG\Response(
@@ -34,8 +34,9 @@ class Pop extends AbstractFOSRestController
      */
     public function __invoke(MessageManager $manager): Response
     {
-        $view = $this->view($manager->pop(), 200)
-                     ->setFormat('json');
+        $message = $manager->pop();
+        $view    = $this->view($message, 200)
+                        ->setFormat('json');
         
         return $this->handleView($view);
     }

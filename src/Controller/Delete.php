@@ -22,7 +22,7 @@ class Delete extends AbstractFOSRestController
      * @return FormInterface|Response
      *
      * @ParamConverter("message", options={"requestParam": "id"})
-     * @Rest\Delete("/queue/{id}")
+     * @Rest\Delete("/queue/messages/{id}")
      * @SWG\Response(
      *     response=204,
      *     description="The Message is deleted."

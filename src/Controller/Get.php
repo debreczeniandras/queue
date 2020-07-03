@@ -21,7 +21,7 @@ class Get extends AbstractFOSRestController
      * @return Response
      *
      * @ParamConverter("message", options={"requestParam": "id"})
-     * @Rest\Get("/queue/{id}", name="get_message")
+     * @Rest\Get("/queue/messages/{id}", name="get_message")
      * @SWG\Response(
      *     response=200,
      *     description="Get One Message.",
