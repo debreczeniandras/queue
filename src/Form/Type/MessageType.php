@@ -16,7 +16,7 @@ class MessageType extends AbstractType
     {
         $builder->add('priority', IntegerType::class);
         $builder->add('value');
-        $builder->addEventListener(FormEvents::PRE_SET_DATA,[$this, 'preSet']);
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'preSet']);
     }
     
     public function configureOptions(OptionsResolver $resolver)
@@ -28,7 +28,8 @@ class MessageType extends AbstractType
     
     public function preSet(FormEvent $event)
     {
-        $data = $event->getData();
-        $data->setId(hash("crc32b", hash('sha256', uniqid(mt_rand(), true), true)));
+        if ($message = $event->getData()) {
+            $message->setId(hash("crc32b", hash('sha256', uniqid(mt_rand(), true), true)));
+        }
     }
 }
