@@ -3,8 +3,8 @@
 namespace App\Storage;
 
 use App\Entity\Message;
+use App\Entity\MessageQueue;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use SymfonyBundles\RedisBundle\Redis\ClientInterface;
 
@@ -21,12 +21,23 @@ class RedisMessageStorage implements MessageStorageInterface
     
     public function insert(Message $message): bool
     {
-        $serialized = $this->serializer->serialize($message, 'json', ['groups' => [$contextGroup]]);
-        $this->redis->set($message->getId(), $serialized);
-        
+        $serialized = $this->serializer->serialize($message, 'json');
+        return (bool) $this->redis->set($message->getId(), $serialized);
     }
     
     public function pop(): Message
+    {
+        $queue = $this->getQueue();
+        
+        return $queue->extract();
+    }
+    
+    public function remove(Message $message): bool
+    {
+        return (bool)$this->redis->remove($message->getId());
+    }
+    
+    public function find(string $id): Message
     {
         $data = $this->redis->get($id);
     
@@ -40,15 +51,16 @@ class RedisMessageStorage implements MessageStorageInterface
         return $message;
     }
     
-    public function remove(Message $message): bool
+    public function getQueue(): MessageQueue
     {
-        return (bool)$this->redis->remove($message->getId());
-    }
-    
-    public function find(string $id): Message
-    {
-        $message = $this->serializer->deserialize($data, Message::class, 'json');
+        $messageQueue = new MessageQueue();
+        $keys = $this->redis->keys('*');
         
-        return (bool)$this->redis->get($id);
+        foreach ($keys as $key) {
+            $message = $this->find($key);
+            $messageQueue->insert($message, $message->getPriority());
+        }
+        
+        return $messageQueue;
     }
 }
