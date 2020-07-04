@@ -8,7 +8,7 @@
       `price` int(11) NOT NULL,
       `inStock` tinyint(1) NOT NULL,
       PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     
     
     -- customer definition
@@ -17,7 +17,7 @@
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
       PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     
     
     -- `order` definition
@@ -28,7 +28,7 @@
       `total` int(11) NOT NULL,
       `discount` int(11) NOT NULL,
       PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     
     
     -- order_customer definition
@@ -39,8 +39,8 @@
       PRIMARY KEY (`order_id`,`customer_id`),
       KEY `IDX_60C16CB88D9F6D38` (`order_id`),
       KEY `IDX_60C16CB89395C3F3` (`customer_id`),
-      CONSTRAINT `FK_60C16CB88D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE,
-      CONSTRAINT `FK_60C16CB89395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
+      CONSTRAINT `FK_60C16CB89395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+      CONSTRAINT `FK_60C16CB88D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     
     
