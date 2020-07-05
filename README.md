@@ -1,4 +1,33 @@
-# 2.1. DDL 
+# Bootstrap application for Message Queue Task
+
+    cp .env.dist .env 
+
+fill out the ports for redis Explorer GUI and web port.
+
+    docker-compose up --build -d
+    
+api doc : 
+    
+    localhost:{yourport}/api/doc
+    
+api base path:
+
+    localhost:{yourport}/api/v1/
+
+
+## Info
+
+The api has the following workflow
+
+    Controller <--> Manager <--> Storage
+
+This allows simple exchange of the storage layer and better testing. 
+
+
+
+# Database Tasks 
+
+## 2.1. Suggested DDL for shop system 
 
     -- article definition
     
@@ -59,13 +88,11 @@
       CONSTRAINT `FK_52EA1F098D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     
-# 2.2. 
-
-Most expensive article:
+## 2.2. - The Most expensive article:
     
     select * from article order by price desc limit 1
     
-The first 100 customers ordering laptops a since 1st Jan, 2012
+## 2.3 - The first 100 customers ordering laptops a since 1st Jan, 2012
 
     select c.* from customer c 
     	join order_customer oc on c.id = oc.customer_id 
@@ -76,7 +103,7 @@ The first 100 customers ordering laptops a since 1st Jan, 2012
     and o.created > '2012-01-01'
     limit 100 
     
-3. Todo
+## 2.4 Todo
 
 Most spending customer per month.
 
@@ -97,4 +124,5 @@ WIP.
     	oi.article_id = a.id
     GROUP BY
     	spending_month
+    
     
