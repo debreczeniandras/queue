@@ -98,4 +98,3 @@ WIP.
     GROUP BY
     	spending_month
     
-    	
