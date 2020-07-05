@@ -19,17 +19,20 @@ class RedisMessageStorage implements MessageStorageInterface
         $this->serializer = $serializer;
     }
     
-    public function insert(Message $message): bool
+    public function insert(Message $message): MessageQueue
     {
         $serialized = $this->serializer->serialize($message, 'json');
-        return (bool) $this->redis->set($message->getId(), $serialized);
+        
+        $this->redis->set($message->getId(), $serialized);
+        
+        return $this->getQueue();
     }
     
-    public function pop(): Message
+    public function pop(): ?Message
     {
         $queue = $this->getQueue();
         
-        return $queue->extract();
+        return $queue->isEmpty() ? null : $queue->extract();
     }
     
     public function remove(Message $message): bool
@@ -37,24 +40,24 @@ class RedisMessageStorage implements MessageStorageInterface
         return (bool)$this->redis->remove($message->getId());
     }
     
-    public function find(string $id): Message
+    public function find(string $id): ?Message
     {
         $data = $this->redis->get($id);
-    
-        if (is_null($data)) {
-            throw new NotFoundHttpException('This Message does not exist');
+        
+        if (!$data) {
+            return null;
         }
-    
+        
         /** @var Message $message */
         $message = $this->serializer->deserialize($data, Message::class, 'json');
-    
+        
         return $message;
     }
     
     public function getQueue(): MessageQueue
     {
         $messageQueue = new MessageQueue();
-        $keys = $this->redis->keys('*');
+        $keys         = $this->redis->keys('*');
         
         foreach ($keys as $key) {
             $message = $this->find($key);

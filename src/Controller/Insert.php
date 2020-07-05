@@ -39,7 +39,10 @@ class Insert extends AbstractFOSRestController
      * @SWG\Response(
      *     response=201,
      *     description="Message inserted.",
-     *     headers={@SWG\Header(header="Location", description="Link to created message", type="string")},
+     *     headers={
+     *      @SWG\Header(header="Location", description="Link to created message", type="string"),
+     *      @SWG\Header(header="X-Count", description="The size of the queue after insert", type="integer"),
+     * },
      *     @Model(type=Message::class)
      * )
      *
@@ -58,10 +61,11 @@ class Insert extends AbstractFOSRestController
             return $this->handleView($this->view($form)->setFormat('json'));
         }
         
-        $manager->insert($message);
+        $queue = $manager->insert($message);
         
         $view = $this->view($message, 201)
                      ->setHeader('Location', $this->generateUrl('get_message', ['id' => $message->getId()]))
+                     ->setHeader('X-Count', $queue->count())
                      ->setFormat('json');
         
         return $this->handleView($view);

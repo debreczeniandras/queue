@@ -24,6 +24,9 @@ class Pop extends AbstractFOSRestController
      * @SWG\Response(
      *     response=200,
      *     description="Last message from the queue is popped.",
+     *      headers={
+     *      @SWG\Header(header="X-Count", description="The size of the queue after pop", type="integer"),
+     * },
      *     @Model(type=Message::class)
      * )
      * @SWG\Response(
@@ -36,6 +39,7 @@ class Pop extends AbstractFOSRestController
     {
         $message = $manager->pop();
         $view    = $this->view($message, 200)
+                        ->setHeader('X-Count', $manager->findAll()->count())
                         ->setFormat('json');
         
         return $this->handleView($view);

@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\Message;
 use App\Entity\MessageQueue;
 use App\Storage\RedisMessageStorage;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageManager
 {
@@ -15,7 +16,7 @@ class MessageManager
         $this->storage = $storage;
     }
     
-    public function insert(Message $message): bool
+    public function insert(Message $message): MessageQueue
     {
         return $this->storage->insert($message);
     }
@@ -23,6 +24,10 @@ class MessageManager
     public function pop(): Message
     {
         $lastMessage = $this->storage->pop();
+        
+        if (!$lastMessage) {
+            throw new NotFoundHttpException('The Queue is empty');
+        }
         
         $this->remove($lastMessage);
         
@@ -36,7 +41,13 @@ class MessageManager
     
     public function find(string $id): Message
     {
-        return $this->storage->find($id);
+        $message = $this->storage->find($id);
+    
+        if (is_null($message)) {
+            throw new NotFoundHttpException('This Message does not exist');
+        }
+        
+        return $message;
     }
     
     public function findAll(): MessageQueue

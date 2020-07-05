@@ -4,7 +4,6 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use SymfonyBundles\RedisBundle\Redis\Client;
 use SymfonyBundles\RedisBundle\Redis\ClientInterface;
 
 /**
@@ -41,7 +40,7 @@ class MessageQueueControllerTest extends WebTestCase
     }
     
     /**
-     * @testdox      If queue responds with empty value and not found
+     * @testdox  If queue responds with empty value and not found
      */
     public function testGetQueue()
     {
@@ -74,6 +73,9 @@ class MessageQueueControllerTest extends WebTestCase
         $this->assertArrayHasKey('value', $data);
         $this->assertEquals(1, $data['priority']);
         $this->assertEquals('Test Value', $data['value']);
+    
+        $this->assertTrue($response->headers->has('X-Count'));
+        $this->assertEquals(1, $response->headers->get('X-Count'));
         
         // test queue length
         $this->client->request('GET', '/api/v1/queue');
@@ -86,9 +88,32 @@ class MessageQueueControllerTest extends WebTestCase
     }
     
     /**
+     * @testdox      If empty queue returns 404 for pop
+     */
+    public function testPopReachingEmptyQueue()
+    {
+        // insert some items
+        $this->client->request('POST', '/api/v1/queue', [], [], ['CONTENT_TYPE' => 'application/json'],
+                               '{"priority": 1, "value": "Test Value 1"}');
+        $this->client->request('POST', '/api/v1/queue', [], [], ['CONTENT_TYPE' => 'application/json'],
+                               '{"priority": 2, "value": "Test Value 2"}');
+        
+        // pop the messages
+        $this->client->request('POST', '/api/v1/queue/messages');
+        $this->client->request('POST', '/api/v1/queue/messages');
+        
+        // this should now return 404
+        $this->client->request('POST', '/api/v1/queue/messages');
+        
+        $response = $this->client->getResponse();
+        
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+    
+    /**
      * @testdox      If inserted elements are returned when 'pop'
      */
-    public function testIfPopWorks()
+    public function testPop()
     {
         // insert some items
         $this->client->request('POST', '/api/v1/queue', [], [], ['CONTENT_TYPE' => 'application/json'],
@@ -114,6 +139,8 @@ class MessageQueueControllerTest extends WebTestCase
         $this->assertEquals(4, $data['priority']);
         $this->assertEquals('Test Value 4', $data['value']);
         
+        $this->assertTrue($response->headers->has('X-Count'));
+        $this->assertEquals(3, $response->headers->get('X-Count'));
         
         // test queue length
         $this->client->request('GET', '/api/v1/queue');
@@ -126,7 +153,6 @@ class MessageQueueControllerTest extends WebTestCase
         
         
         // pop another
-        // pop the last
         $this->client->request('POST', '/api/v1/queue/messages');
         $response = $this->client->getResponse();
         
