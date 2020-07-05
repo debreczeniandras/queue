@@ -22,7 +22,11 @@ class MessageManager
     
     public function pop(): Message
     {
-        return $this->storage->pop();
+        $lastMessage = $this->storage->pop();
+        
+        $this->remove($lastMessage);
+        
+        return $lastMessage;
     }
     
     public function remove(Message $message): bool

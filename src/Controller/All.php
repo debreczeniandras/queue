@@ -36,8 +36,10 @@ class All extends AbstractFOSRestController
      */
     public function __invoke(MessageManager $manager): Response
     {
-        $view = $this->view($manager->findAll(), 200)
-                     ->setFormat('json');
+        $messageQueue = $manager->findAll();
+        $view         = $this->view($messageQueue, $messageQueue->count() ? 200 : 404)
+                             ->setHeader('X-Count', $messageQueue->count())
+                             ->setFormat('json');
         
         return $this->handleView($view);
     }
