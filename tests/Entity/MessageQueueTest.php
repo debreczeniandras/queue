@@ -15,6 +15,9 @@ class MessageQueueTest extends TestCase
      * @dataProvider provideForInsert
      * @testdox      If result is inserted
      *
+     * @param Message $message
+     * @param         $expPriority
+     * @param         $expValue
      */
     public function testIfInserted(Message $message, $expPriority, $expValue)
     {

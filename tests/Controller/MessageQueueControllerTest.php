@@ -16,27 +16,21 @@ class MessageQueueControllerTest extends WebTestCase
     
     public function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
         
-        // returns the real and unchanged service container
-        $container = self::$kernel->getContainer();
-        
-        // gets the special container that allows fetching private services
-        $container = self::$container;
+        $this->client = static::createClient();
         
         /** @var ClientInterface $redisClient */
-        $redisClient = $container->get(ClientInterface::class);
+        $redisClient = self::$container->get(ClientInterface::class);
         $this->redis = $redisClient;
-        
         $this->redis->flushdb();
-        
-        $this->client = $container->get('test.client');
     }
     
     public function tearDown(): void
     {
-        $this->redis->flushdb();
         parent::tearDown();
+        
+        $this->redis->flushdb();
     }
     
     /**
@@ -63,8 +57,8 @@ class MessageQueueControllerTest extends WebTestCase
         
         $response = $this->client->getResponse();
         
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertTrue($response->headers->has('Location'));
+        $this->assertResponseStatusCodeSame(201);
+        $this->assertResponseHasHeader('Location');
         
         $data = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('id', $data);
@@ -74,17 +68,13 @@ class MessageQueueControllerTest extends WebTestCase
         $this->assertEquals(1, $data['priority']);
         $this->assertEquals('Test Value', $data['value']);
     
-        $this->assertTrue($response->headers->has('X-Count'));
-        $this->assertEquals(1, $response->headers->get('X-Count'));
+        $this->assertResponseHeaderSame('X-Count', 1);
         
         // test queue length
         $this->client->request('GET', '/api/v1/queue');
         
-        $response = $this->client->getResponse();
-        
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertTrue($response->headers->has('X-Count'));
-        $this->assertEquals(1, $response->headers->get('X-Count'));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('X-Count', 1);
     }
     
     /**
@@ -105,9 +95,7 @@ class MessageQueueControllerTest extends WebTestCase
         // this should now return 404
         $this->client->request('POST', '/api/v1/queue/messages');
         
-        $response = $this->client->getResponse();
-        
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertResponseStatusCodeSame(404);
     }
     
     /**
@@ -129,7 +117,7 @@ class MessageQueueControllerTest extends WebTestCase
         $this->client->request('POST', '/api/v1/queue/messages');
         $response = $this->client->getResponse();
         
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertResponseStatusCodeSame(200);
         
         $data = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('id', $data);
@@ -139,24 +127,20 @@ class MessageQueueControllerTest extends WebTestCase
         $this->assertEquals(4, $data['priority']);
         $this->assertEquals('Test Value 4', $data['value']);
         
-        $this->assertTrue($response->headers->has('X-Count'));
-        $this->assertEquals(3, $response->headers->get('X-Count'));
+        $this->assertResponseHeaderSame('X-Count', 3);
         
         // test queue length
         $this->client->request('GET', '/api/v1/queue');
         
-        $response = $this->client->getResponse();
-        
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertTrue($response->headers->has('X-Count'));
-        $this->assertEquals(3, $response->headers->get('X-Count'));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('X-Count', 3);
         
         
         // pop another
         $this->client->request('POST', '/api/v1/queue/messages');
         $response = $this->client->getResponse();
         
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertResponseStatusCodeSame(200);
         
         $data = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('id', $data);
@@ -169,10 +153,7 @@ class MessageQueueControllerTest extends WebTestCase
         // test queue length
         $this->client->request('GET', '/api/v1/queue');
         
-        $response = $this->client->getResponse();
-        
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertTrue($response->headers->has('X-Count'));
-        $this->assertEquals(2, $response->headers->get('X-Count'));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertResponseHeaderSame('X-Count', 2);
     }
 }
