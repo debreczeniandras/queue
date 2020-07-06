@@ -24,8 +24,11 @@ The api has the following workflow
 This allows simple exchange of the storage layer and better testing. 
 
 
-
 # Database Tasks 
+
+Suggested entities for the shop are here:
+
+    src/Entity/Shop/
 
 ## 2.1. Suggested DDL for shop system 
 
